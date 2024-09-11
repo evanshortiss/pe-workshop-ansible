@@ -59,6 +59,10 @@ spec:
           value: "{{ ocp4_workload_platform_engineering_workshop_gitlab_users_count }}"
         - name: gitlab.users.password
           value: {{ ocp4_workload_platform_engineering_workshop_gitlab_users_password }}
+        - name: gitlab.applications.keycloak.secret
+          value: {{ ocp4_workload_platform_engineering_workshop_gitlab_keycloak_application_credentials_secret }}
+        - name: gitlab.applications.keycloak.callbackUrl
+          value: https://{{ ocp4_workload_platform_engineering_workshop_rhbk_host }}.{{ r_openshift_subdomain }}/realms/{{ ocp4_workload_platform_engineering_workshop_rhbk_backstage_realm_name }}/broker/{{ ocp4_workload_platform_engineering_workshop_rhbk_identity_provider_gitlab_name }}/endpoint
 {% for group in ocp4_workload_platform_engineering_workshop_gitlab_import_repos -%}
           {% set grouploop = loop %}
         - name: gitlab.groups[{{ grouploop.index - 1 }}].name
