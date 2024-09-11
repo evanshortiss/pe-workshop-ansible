@@ -14,17 +14,16 @@ spec:
   project: default
   source:
     repoURL: {{ ocp4_workload_platform_engineering_workshop_rhdh_helm_repo }}
-    path: {{ ocp4_workload_platform_engineering_workshop_rhdh_helm_chart }}
-    targetRevision: {{ ocp4_workload_platform_engineering_workshop_rhdh_helm_revision }}
+    path: {{ ocp4_workload_platform_engineering_workshop_rhdh_helm_repo_path }}
+    targetRevision: {{ ocp4_workload_platform_engineering_workshop_rhdh_helm_repo_tag }}
     helm:
       values: |
         redhat-developer-hub-prereqs:
           nameOverride: backstage
           backstage:
             postgresql:
-              password: {{ ocp4_workload_platform_engineering_workshop_rhdh_psql_password }}     
-        redhat-developer-hub:
-          
+              password: {{ ocp4_workload_platform_engineering_workshop_rhdh_psql_password }}
+        redhat-developer-hub:          
           global:
             clusterRouterBase: {{ r_openshift_subdomain }}
           upstream:
@@ -35,6 +34,46 @@ spec:
                 existingSecret: backstage-postgresql
                 secretKeys:
                   userPasswordKey: postgres-password
+
+
+            backstage:
+              appConfig:
+                auth:
+                  environment: production
+                  providers:
+                    oauth2Proxy: {}
+                signInPage: oauth2Proxy
+
+              extraContainers:
+                - name: oauth2-proxy
+                  env:
+                    - name: OAUTH2_PROXY_CLIENT_ID
+                      value: {{ ocp4_workload_platform_engineering_workshop_rhbk_realm_backstage_name }}
+                    - name: OAUTH2_PROXY_CLIENT_SECRET
+                      value: {{ ocp4_workload_platform_engineering_workshop_rhbk_client_backstage_secret }}
+                    - name: OAUTH2_PROXY_COOKIE_SECRET
+                      value: "{{ '{{ randAlpha 32 | lower | b64enc }}' }}"
+                    - name: OAUTH2_PROXY_OIDC_ISSUER_URL
+                      value: https://{{ ocp4_workload_platform_engineering_workshop_rhbk_host }}.{{ r_openshift_subdomain }}/realms/{{ ocp4_workload_platform_engineering_workshop_rhbk_realm_backstage_name }}
+                    - name: OAUTH2_PROXY_SSL_INSECURE_SKIP_VERIFY
+                      value: 'true'
+                  ports:
+                    - name: oauth2-proxy
+                      containerPort: 4180
+                      protocol: TCP
+                  imagePullPolicy: IfNotPresent
+                  image: 'quay.io/oauth2-proxy/oauth2-proxy:latest'
+                  args:
+                    - '--provider=oidc'
+                    - '--email-domain=*'
+                    - '--upstream=http://localhost:7007'
+                    - '--http-address=0.0.0.0:4180'
+                    - '--skip-provider-button'
+                    - '--insecure-oidc-allow-unverified-email=true'
+            service:
+              ports:
+                backend: 4180
+                targetPort: oauth2-proxy
           route:
             host: backstage-{{ ocp4_workload_platform_engineering_workshop_rhdh_namespace }}.{{ r_openshift_subdomain }}
   syncPolicy:
