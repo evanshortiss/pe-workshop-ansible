@@ -214,13 +214,18 @@ ocp4_workload_platform_engineering_workshop_rhbk_application_namespace: openshif
 ocp4_workload_platform_engineering_workshop_rhbk_application_name: keycloak
 ocp4_workload_platform_engineering_workshop_rhbk_namespace: keycloak
 ocp4_workload_platform_engineering_workshop_rhbk_gitops_repo: https://github.com/btison/pe-workshop-helm.git
-ocp4_workload_platform_engineering_workshop_rhbk_gitops_repo_tag: main
+ocp4_workload_platform_engineering_workshop_rhbk_gitops_repo_tag: backstage-auth
 ocp4_workload_platform_engineering_workshop_rhbk_gitops_repo_path: keycloak
 
 ocp4_workload_platform_engineering_workshop_rhbk_external_access: false
 ocp4_workload_platform_engineering_workshop_rhbk_host: sso
 
 ocp4_workload_platform_engineering_workshop_rhbk_realm_backstage_name: backstage
+ocp4_workload_platform_engineering_workshop_rhbk_identity_provider_gitlab_name: gitlab
+
+ocp4_workload_platform_engineering_workshop_rhbk_client_backstage_secret:
+  "{{ lookup('ansible.builtin.password', '/tmp/passwordfile-client-backstage', chars=['ascii_letters', 'digits'], length=32) }}"
+
 # ------------------------------------------------
 # Red Hat Developer Hub
 # ------------------------------------------------

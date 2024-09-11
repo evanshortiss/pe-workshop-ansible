@@ -1,5 +1,30 @@
 ---
 
+- name: Wait for the gitlab application secret to be created
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: "{{ ocp4_workload_platform_engineering_workshop_gitlab_keycloak_application_credentials_secret }}"
+    namespace: "{{ ocp4_workload_platform_engineering_workshop_gitlab_namespace }}"
+  register: r_gitlab_application_keycloak_secret
+  retries: 60
+  delay: 10
+  until:
+    - r_gitlab_application_keycloak_secret.resources[0].data is defined
+
+- name: Set facts
+  ansible.builtin.set_fact:
+    _backstage_redirect_url: "https://backstage-{{ ocp4_workload_platform_engineering_workshop_rhdh_namespace }}.{{ r_openshift_subdomain }}/oauth2/callback" # yamllint disable-line rule:line-length
+    _backstage_web_origin: "https://backstage-{{ ocp4_workload_platform_engineering_workshop_rhdh_namespace }}.{{ r_openshift_subdomain }}" # yamllint disable-line rule:line-length
+    _gitlab_authorization_url: "https://gitlab-{{ ocp4_workload_platform_engineering_workshop_gitlab_namespace }}.{{ r_openshift_subdomain }}/oauth/authorize" # yamllint disable-line rule:line-length
+    _gitlab_token_url: "https://gitlab-{{ ocp4_workload_platform_engineering_workshop_gitlab_namespace }}.{{ r_openshift_subdomain }}/oauth/token"
+    _gitlab_application_client_id: "{{ r_gitlab_application_keycloak_secret.resources[0].data.clientId | b64decode }}"
+    _gitlab_application_client_secret: "{{ r_gitlab_application_keycloak_secret.resources[0].data.clientSecret | b64decode }}"
+
+- name: Debug
+  ansible.builtin.debug:
+    var: ocp4_workload_platform_engineering_workshop_rhbk_client_backstage_secret
+
 - name: Create RHBK application
   kubernetes.core.k8s:
     state: present

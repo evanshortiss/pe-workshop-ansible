@@ -30,12 +30,22 @@ spec:
       values: |
 
         keycloak:
-
           route:
             host: {{ ocp4_workload_platform_engineering_workshop_rhbk_host }}.{{ r_openshift_subdomain }}
-
           ingress:
             enabled: {{ ocp4_workload_platform_engineering_workshop_rhbk_external_access }}
+
         keycloak-realm-import:
           realm:
             name: {{ ocp4_workload_platform_engineering_workshop_rhbk_realm_backstage_name }}
+          backstage:
+            redirectUri: {{ _backstage_redirect_url }}
+            webOrigin: {{ _backstage_web_origin }}
+            secret: {{ ocp4_workload_platform_engineering_workshop_rhbk_client_backstage_secret }}
+          identityProvider:
+            gitlab:
+              name: {{ ocp4_workload_platform_engineering_workshop_rhbk_identity_provider_gitlab_name }}
+              authorizationUrl: {{ _gitlab_authorization_url }}
+              tokenUrl: {{ _gitlab_token_url }}
+              clientId: {{ _gitlab_application_client_id }}
+              clientSecret: {{ _gitlab_application_client_secret }}
