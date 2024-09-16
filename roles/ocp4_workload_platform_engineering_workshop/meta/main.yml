@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: ocp4_workload_platform_engineering_workshop
+  author: Bernard Tison
+  description: |
+    Setup Red Hat Developer Hub using the Helm Chart, and associated dependencies on OpenShift.
+  license: MIT
+  min_ansible_version: 2.9
+  platforms: []
+  galaxy_tags:
+  - ocp
+  - openshift
+  - operators
+  - rhdh
+dependencies: []
