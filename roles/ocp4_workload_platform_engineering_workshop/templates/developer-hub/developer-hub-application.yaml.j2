@@ -23,7 +23,7 @@ spec:
           backstage:
             postgresql:
               password: {{ ocp4_workload_platform_engineering_workshop_rhdh_psql_password }}
-        redhat-developer-hub:          
+        redhat-developer-hub:
           global:
             clusterRouterBase: {{ r_openshift_subdomain }}
           upstream:
@@ -34,8 +34,6 @@ spec:
                 existingSecret: backstage-postgresql
                 secretKeys:
                   userPasswordKey: postgres-password
-
-
             backstage:
               appConfig:
                 auth:
@@ -43,7 +41,9 @@ spec:
                   providers:
                     oauth2Proxy: {}
                 signInPage: oauth2Proxy
-
+              extraAppConfig:
+                - configMapRef: app-config-rhdh
+                  filename: app-config-rhdh.yaml
               extraContainers:
                 - name: oauth2-proxy
                   env:
